@@ -13,16 +13,16 @@ def transform_dir(input_dir: str, grouping_length: int = 100) -> pandas.DataFram
         chunk = [x for x in group if x]
         df = pandas.DataFrame(chunk) if df is None else df.append(chunk)
 
-    return df or pandas.DataFrame()
+    return df if df is not None else pandas.DataFrame()
 
 
 T = typing.TypeVar('T')
 
 
-def _grouper(iterable: typing.Iterable[T], n: int) -> typing.Iterable[T]:
+def _grouper(iterable: typing.Iterable[T], group_length: int) -> typing.Iterable[T]:
     "Collect data into fixed-length chunks or blocks"
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
+    args = [iter(iterable)] * group_length
     return itertools.zip_longest(*args, fillvalue=None)
 
 

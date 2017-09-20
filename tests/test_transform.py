@@ -1,6 +1,6 @@
 import json
-import py._path.local
 import typing
+import py._path.local
 from tribble import transform
 
 
@@ -20,13 +20,15 @@ def data_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, t
         "deliveryDate": "",
         "originalValue": 6000.0,
         "contractValue": 6000,
-        "comments": "This contract includes one or more amendments.This contract was competitively sourced.This contract is a multi-year contract.",
+        "comments": "This contract includes one or more amendments.This contract was competitively sourced." +
+                    "This contract is a multi-year contract.",
         "ownerAcronym": "tbs",
         "sourceYear": 2012,
         "sourceQuarter": 1,
         "sourceFiscal": "201213-Q4",
-        "sourceFilename": "tbs\/5ae78038dd512ae3f7e8a91349f443cb.html",
-        "sourceURL": "http:\/\/www.tbs-sct.gc.ca\/scripts\/contracts-contrats\/reports-rapports-eng.asp?r=c&refNum=0000000000&q=4&yr=2012&d=",
+        "sourceFilename": r"tbs\/5ae78038dd512ae3f7e8a91349f443cb.html",
+        "sourceURL": r"http:\/\/www.tbs-sct.gc.ca\/scripts\/contracts-contrats\/reports-rapports-eng.asp" +
+                     "?r=c&refNum=0000000000&q=4&yr=2012&d=",
         "amendedValues": [],
         "contractPeriodRange": "2012-04-01 to 2018-03-31",
         "yearsDuration": 6,
@@ -70,4 +72,4 @@ def test_chunking(tmpdir: py._path.local.LocalPath) -> None:
 
 def test_blank_dir(tmpdir: py._path.local.LocalPath) -> None:
     output = transform.transform_dir(str(tmpdir))
-    assert len(output) == 0
+    assert len(output) == 0  # pylint: disable=len-as-condition
