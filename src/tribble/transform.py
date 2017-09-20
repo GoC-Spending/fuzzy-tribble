@@ -20,7 +20,7 @@ T = typing.TypeVar('T')
 
 
 def _grouper(iterable: typing.Iterable[T], group_length: int) -> typing.Iterable[T]:
-    "Collect data into fixed-length chunks or blocks"
+    """Collect data into fixed-length chunks or blocks"""
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
     args = [iter(iterable)] * group_length
     return itertools.zip_longest(*args, fillvalue=None)
