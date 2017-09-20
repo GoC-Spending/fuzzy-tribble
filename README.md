@@ -1,5 +1,6 @@
 # fuzzy-tribble
 Processing GoC-Spending data output
+![Travis-CI Status](https://travis-ci.org/GoC-Spending/fuzzy-tribble.svg?branch=master)
 
 ## Requirements
 
