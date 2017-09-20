@@ -1,4 +1,4 @@
-setuptools>=36.2.0
+setuptools==36.5.0
 click==6.7
 lxml==4.0.0
 requests==2.18.4
