@@ -1,11 +1,12 @@
-language: python
-python:
-  - "3.6"
+sudo: required
+
+services:
+  - docker
+
 install:
-  - pip install setuptools==36.5.0
-  - pip install -r requirements.txt
-  - pip install -e .
+  - docker build -t jasonmwhite/tribble .
+
 script:
-  - pytest tests
-  - pylint src tests
-  - mypy src tests
+  - docker run jasonmwhite/tribble script/run_tests.sh
+  - docker run jasonmwhite/tribble pylint src tests
+  - docker run jasonmwhite/tribble mypy src tests
