@@ -4,7 +4,8 @@ Processing GoC-Spending data output
 
 ## Requirements
 
-Python 3.6
+- Python 3.6
+- [Protobuf](https://github.com/google/protobuf/)
 
 ## Installation
 
