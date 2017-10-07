@@ -15,3 +15,7 @@ Processing GoC-Spending data output
 - Install requirements
   - `pip install -r requirements.txt`
   - `pip install -e .` 
+
+## Usage
+
+- `tribble --help`
