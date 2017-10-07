@@ -1,11 +1,15 @@
+import getpass
 import os
+import typing
 import click
+import tribble.database
 import tribble.transform
 
 
 @click.group()
-def main() -> None:
-    pass
+@click.pass_context
+def main(ctx: click.core.Context) -> None:
+    ctx.obj = {}
 
 
 @main.command()
@@ -16,3 +20,24 @@ def transform(input_dir: str, output: str) -> None:
 
     df = tribble.transform.transform_dir(input_dir)
     df.to_csv(output)
+
+
+@main.group()
+@click.option('--host', default='localhost')
+@click.option('--user', default=getpass.getuser())
+@click.option('--password')
+@click.option('--schema', default='spending')
+@click.pass_context
+def database(ctx: click.core.Context, host: str, user: str, password: typing.Optional[str], schema: str) -> None:
+    creds = tribble.database.Creds(host, user, password, schema)
+    ctx.obj['creds'] = creds
+
+
+@database.command()
+@click.option('--force', type=bool, default=False, is_flag=True)
+@click.pass_context
+def init(ctx: click.core.Context, force: bool) -> None:
+    with tribble.database.cursor(ctx.obj['creds']) as cursor:
+        if force:
+            tribble.database.drop_table(cursor)
+        tribble.database.create_table(cursor)
