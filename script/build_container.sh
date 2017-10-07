@@ -7,7 +7,7 @@ add-apt-repository -y ppa:deadsnakes/ppa
 apt-get update && apt-get install -y python3.6 python3.6-dev
 
 export DEBIAN_FRONTEND=noninteractive
-apt-get install -y mysql-server-5.7
+apt-get install -y mysql-server-5.7 libmysqlclient-dev
 mkdir -p /var/lib/mysql
 mkdir -p /var/run/mysqld
 mkdir -p /var/log/mysql
