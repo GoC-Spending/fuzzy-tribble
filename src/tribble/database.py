@@ -1,8 +1,5 @@
-import contextlib
 import typing
-import mysql.connector
-from mysql.connector import cursor as mysql_cursor
-from mysql.connector import errorcode
+from sqlalchemy import create_engine, MetaData, Table, Column, VARCHAR, TEXT, engine
 
 
 class Creds(typing.NamedTuple):
@@ -12,45 +9,38 @@ class Creds(typing.NamedTuple):
     database: str
 
 
-@contextlib.contextmanager
-def cursor(creds: Creds) -> mysql_cursor.MySQLCursor:
-    connection: typing.Optional[mysql.connector.MySQLConnection] = None
-    cursor_ = None
-    try:
-        connection = mysql.connector.connect(**creds._asdict())
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Access Denied. Check your username and password.")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database {} does not exist".format(creds.database))
-        else:
-            print("Unknown error: {}".format(err.msg))
-    else:
-        cursor_ = connection.cursor()
-        yield cursor_
-    finally:
-        if cursor_:
-            cursor_.close()
-        if connection:
-            connection.close()
+def connect_db(creds: Creds) -> engine.base.Engine:
+    password_stub = f':{creds.password}' if creds.password else ''
+    return create_engine(f"mysql+mysqldb://{creds.user}{password_stub}@{creds.host}/{creds.database}")
 
 
-def create_table(cursor_: mysql_cursor.MySQLCursor) -> None:
-    cursor_.execute(
-        "CREATE TABLE contracts ("
-        "  uuid VARCHAR(50), "
-        "  vendor_name VARCHAR(255), "
-        "  reference_number VARCHAR(255), "
-        "  contract_date VARCHAR(20), "
-        "  contract_period_start VARCHAR(20), "
-        "  contract_period_end VARCHAR(20), "
-        "  delivery_date VARCHAR(20), "
-        "  contract_value VARCHAR(255), "
-        "  department VARCHAR(20), "
-        "  source_fiscal VARCHAR(20)"
-        ");"
-    )
+def create_db(engine: engine.base.Engine, database_name: str, runtime_user: str, runtime_host: str,
+              force: bool = False) -> None:
+    connection = engine.connect()
+    if force:
+        connection.execute(f'DROP SCHEMA IF EXISTS {database_name};')
+    connection.execute(f'CREATE SCHEMA {database_name};')
+    connection.execute(f'GRANT ALL PRIVILEGES ON {database_name}.* to {runtime_user}@{runtime_host};')
+    connection.execute('FLUSH PRIVILEGES;')
+    connection.close()
 
 
-def drop_table(cursor_: mysql_cursor.MySQLCursor) -> None:
-    cursor_.execute('DROP TABLE IF EXISTS contracts;')
+def init(engine: engine.base.Engine, force: bool) -> None:
+    meta = MetaData(bind=engine)
+
+    contracts = Table('contracts', meta,
+                      Column('uuid', VARCHAR(length=255), primary_key=True, autoincrement=False),
+                      Column('vendor_name', TEXT, nullable=True),
+                      Column('reference_number', TEXT, nullable=True),
+                      Column('contract_date', VARCHAR(length=255), nullable=True),
+                      Column('contract_period_start', VARCHAR(length=255), nullable=True),
+                      Column('contract_period_end', VARCHAR(length=255), nullable=True),
+                      Column('delivery_date', VARCHAR(length=255), nullable=True),
+                      Column('contract_value', VARCHAR(length=255), nullable=True),
+                      Column('department', TEXT, nullable=True),
+                      Column('source_fiscal', VARCHAR(length=255), nullable=True)
+                     )
+
+    if force and contracts.exists():
+        contracts.drop(engine)
+    contracts.create(engine)

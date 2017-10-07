@@ -2,55 +2,60 @@ import getpass
 import os
 import random
 import typing
-import mysql.connector
 import pytest
+from sqlalchemy import engine
+from tribble import database
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def db_host() -> str:
     return os.environ.get('TRIBBLE_DB_HOST', 'localhost')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def db_user() -> str:
     return os.environ.get('TRIBBLE_DB_USER', getpass.getuser())
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def db_password() -> typing.Optional[str]:
     return os.environ.get('TRIBBLE_DB_PASSWORD')
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def db_name(db_host: str, db_user: str) -> typing.Iterable[str]:
     admin_user = os.environ.get('TRIBBLE_DB_ADMIN_USER', 'root')
     admin_password = os.environ.get('TRIBBLE_DB_ADMIN_PASSWORD')
 
-    connection = mysql.connector.connect(host=db_host, user=admin_user, password=admin_password, database='mysql')
-    cursor = connection.cursor()
+    creds = database.Creds(host=db_host, user=admin_user, password=admin_password, database='mysql')
+    engine = database.connect_db(creds)
 
-    cursor.execute('SHOW DATABASES;')
-    db_names = list(cursor)
+    connection = engine.connect()
+    db_names = connection.execute('SHOW DATABASES;').fetchall()
 
     for (db_name,) in db_names:
         if db_name.startswith('tribble_test_'):
-            cursor.execute(f'DROP SCHEMA {db_name}')
+            engine.execute(f'DROP SCHEMA {db_name}')
 
     database_name = 'tribble_test_{0:0>6}'.format(random.randrange(1, 1000000))
-    cursor.execute(f'CREATE SCHEMA {database_name};')
+    connection.execute(f'CREATE SCHEMA {database_name};')
 
-    cursor.execute(f'USE {database_name};')
-    cursor.execute(f'GRANT ALL ON {database_name} TO {db_user}@{db_host};')
-    cursor.execute('FLUSH PRIVILEGES;')
+    connection.execute(f'USE {database_name};')
+    connection.execute(f'GRANT ALL ON {database_name}.* TO {db_user}@{db_host};')
+    connection.execute('FLUSH PRIVILEGES;')
 
-    cursor.close()
     connection.close()
 
     yield database_name
 
-    connection = mysql.connector.connect(host=db_host, user=admin_user, password=admin_password, database='mysql')
-    cursor = connection.cursor()
-
-    cursor.execute(f'DROP SCHEMA {database_name}')
-    cursor.close()
+    connection = engine.connect()
+    connection.execute(f'DROP SCHEMA {database_name};')
+    connection.execute(f'REVOKE ALL ON {database_name}.* FROM {db_user}@{db_host};')
+    connection.execute('FLUSH PRIVILEGES;')
     connection.close()
+
+
+@pytest.fixture
+def db_engine(db_host: str, db_user: str, db_password: str, db_name: str) -> engine.base.Engine:
+    creds = database.Creds(host=db_host, user=db_user, password=db_password, database=db_name)
+    return database.connect_db(creds)
