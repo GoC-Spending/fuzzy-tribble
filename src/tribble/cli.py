@@ -37,7 +37,4 @@ def database(ctx: click.core.Context, host: str, user: str, password: typing.Opt
 @click.option('--force', type=bool, default=False, is_flag=True)
 @click.pass_context
 def init(ctx: click.core.Context, force: bool) -> None:
-    with tribble.database.cursor(ctx.obj['creds']) as cursor:
-        if force:
-            tribble.database.drop_table(cursor)
-        tribble.database.create_table(cursor)
+    tribble.database.init(ctx.obj['creds'], force)
