@@ -13,7 +13,7 @@ def transform_dir(input_dir: str, grouping_length: int = 100) -> pandas.DataFram
         chunk = [x for x in group if x]
         df = pandas.DataFrame(chunk) if df is None else df.append(chunk)
 
-    return df if df is not None else pandas.DataFrame()
+    return transform(df) if df is not None else pandas.DataFrame()
 
 
 T = typing.TypeVar('T')
@@ -32,3 +32,26 @@ def _json_blobs(input_dir: str) -> typing.Iterator[typing.Dict[str, typing.Any]]
     for filename in input_filenames:
         with open(filename) as input_file:
             yield json.loads(input_file.read())
+
+
+def transform(df: pandas.DataFrame) -> pandas.DataFrame:
+    return conform_schema(df)
+
+
+def conform_schema(df: pandas.DataFrame) -> pandas.DataFrame:
+    column_renames = {
+        'vendorName': 'vendor_name',
+        'referenceNumber': 'reference_number',
+        'contractDate': 'contract_date',
+        'contractPeriodStart': 'contract_period_start',
+        'contractPeriodEnd': 'contract_period_end',
+        'deliveryDate': 'delivery_date',
+        'contractValue': 'contract_value',
+        'ownerAcronym': 'department',
+        'sourceFiscal': 'source_fiscal',
+        'uuid': 'uuid'
+    }
+
+    columns_to_drop = set(df.columns).difference(set(column_renames.keys()))
+
+    return df.rename(columns=column_renames).drop(columns_to_drop, axis=1)
