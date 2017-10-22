@@ -22,4 +22,13 @@ class Contract(Base):
     source_fiscal = Column(String(255), nullable=True)
 
     def __repr__(self):
-        return f'<Contract(id={self.id}, uuid={self.uuid})>'
+        data_string = ', '.join([f'{key}={getattr(self, key)}'
+                                 for key in self.metadata.tables[self.__tablename__].columns.keys()])
+        return f'<Contract({data_string})>'
+
+    def __eq__(self, other):
+        if not isinstance(other, Contract):
+            return False
+        else:
+            return all([getattr(self, key) == getattr(other, key)
+                        for key in self.metadata.tables[self.__tablename__].columns.keys()])

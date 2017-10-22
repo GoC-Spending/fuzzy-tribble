@@ -11,7 +11,7 @@ class Creds(typing.NamedTuple):
 
 def connect_db(creds: Creds) -> engine.base.Engine:
     password_stub = f':{creds.password}' if creds.password else ''
-    return create_engine(f"mysql+mysqldb://{creds.user}{password_stub}@{creds.host}/{creds.database}", echo=True)
+    return create_engine(f"mysql+mysqldb://{creds.user}{password_stub}@{creds.host}/{creds.database}")
 
 
 def create_db(engine: engine.base.Engine, database_name: str, runtime_user: str, runtime_host: str,
