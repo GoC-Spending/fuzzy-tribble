@@ -1,5 +1,5 @@
 import typing
-from sqlalchemy import create_engine, MetaData, Table, Column, VARCHAR, TEXT, engine
+from sqlalchemy import create_engine, engine
 
 
 class Creds(typing.NamedTuple):

@@ -65,5 +65,5 @@ def db_engine(db_host: str, db_user: str, db_password: str, db_name: str) -> eng
 
 
 @pytest.fixture
-def db(db_engine: engine.base.Engine) -> None:
+def db(db_engine: engine.base.Engine) -> None:  # pylint: disable=invalid-name
     contract.Base.metadata.create_all(db_engine)

@@ -6,7 +6,7 @@ Base = declarative_base()
 Session = sessionmaker()
 
 
-class Contract(Base):
+class Contract(Base):  # type: ignore
     __tablename__ = 'contracts'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -29,6 +29,5 @@ class Contract(Base):
     def __eq__(self, other):
         if not isinstance(other, Contract):
             return False
-        else:
-            return all([getattr(self, key) == getattr(other, key)
-                        for key in self.metadata.tables[self.__tablename__].columns.keys()])
+        return all([getattr(self, key) == getattr(other, key)
+                    for key in self.metadata.tables[self.__tablename__].columns.keys()])
