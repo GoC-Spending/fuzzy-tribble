@@ -1,5 +1,6 @@
 import json
 import typing
+import pandas
 import py._path.local
 from tribble import transform
 
@@ -39,6 +40,23 @@ def data_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, t
     return data
 
 
+def output_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
+    data = {
+        "uuid": "tbs-0000000000",
+        "vendor_name": "ABC Company",
+        "reference_number": "0000000000",
+        "contract_date": "2012-03-31",
+        "contract_period_start": "2012-04-01",
+        "contract_period_end": "2018-03-31",
+        "delivery_date": "",
+        "contract_value": 6000,
+        "department": "tbs",
+        "source_fiscal": "201213-Q4",
+    }
+    data.update(overrides)
+    return data
+
+
 def test_transform_dir(tmpdir: py._path.local.LocalPath) -> None:
     data1_file = tmpdir.join('data1.json')
     data1 = data_template({
@@ -73,3 +91,10 @@ def test_chunking(tmpdir: py._path.local.LocalPath) -> None:
 def test_blank_dir(tmpdir: py._path.local.LocalPath) -> None:
     output = transform.transform_dir(str(tmpdir))
     assert len(output) == 0  # pylint: disable=len-as-condition
+
+
+def test_transform() -> None:
+    data = pandas.DataFrame([data_template({})])
+    output = transform.transform(data).to_dict('records')
+
+    assert output == [output_template({})]
