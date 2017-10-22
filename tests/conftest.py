@@ -4,6 +4,7 @@ import random
 import typing
 import pytest
 from sqlalchemy import engine
+from tribble import contract
 from tribble import database
 
 
@@ -58,4 +59,11 @@ def db_name(db_host: str, db_user: str) -> typing.Iterable[str]:
 @pytest.fixture
 def db_engine(db_host: str, db_user: str, db_password: str, db_name: str) -> engine.base.Engine:
     creds = database.Creds(host=db_host, user=db_user, password=db_password, database=db_name)
-    return database.connect_db(creds)
+    eng = database.connect_db(creds)
+    contract.Session.configure(bind=eng)
+    return eng
+
+
+@pytest.fixture
+def db(db_engine: engine.base.Engine) -> None:  # pylint: disable=invalid-name
+    contract.Base.metadata.create_all(db_engine)

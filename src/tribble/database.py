@@ -1,5 +1,5 @@
 import typing
-from sqlalchemy import create_engine, MetaData, Table, Column, VARCHAR, TEXT, engine
+from sqlalchemy import create_engine, engine
 
 
 class Creds(typing.NamedTuple):
@@ -23,24 +23,3 @@ def create_db(engine: engine.base.Engine, database_name: str, runtime_user: str,
     connection.execute(f'GRANT ALL PRIVILEGES ON {database_name}.* to {runtime_user}@{runtime_host};')
     connection.execute('FLUSH PRIVILEGES;')
     connection.close()
-
-
-def init(engine: engine.base.Engine, force: bool) -> None:
-    meta = MetaData(bind=engine)
-
-    contracts = Table('contracts', meta,
-                      Column('uuid', VARCHAR(length=255), primary_key=True, autoincrement=False),
-                      Column('vendor_name', TEXT, nullable=True),
-                      Column('reference_number', TEXT, nullable=True),
-                      Column('contract_date', VARCHAR(length=255), nullable=True),
-                      Column('contract_period_start', VARCHAR(length=255), nullable=True),
-                      Column('contract_period_end', VARCHAR(length=255), nullable=True),
-                      Column('delivery_date', VARCHAR(length=255), nullable=True),
-                      Column('contract_value', VARCHAR(length=255), nullable=True),
-                      Column('department', TEXT, nullable=True),
-                      Column('source_fiscal', VARCHAR(length=255), nullable=True)
-                     )
-
-    if force and contracts.exists():
-        contracts.drop(engine)
-    contracts.create(engine)
