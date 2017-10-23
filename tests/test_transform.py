@@ -1,3 +1,4 @@
+import datetime
 import json
 import typing
 import pandas
@@ -10,7 +11,7 @@ def data_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, t
         "uuid": "tbs-0000000000",
         "vendorName": "ABC Company",
         "referenceNumber": "0000000000",
-        "contractDate": "2012-03-31",
+        "contractDate": "2012â03â31",
         "description": "499 OTHER PROFESSIONAL SERVICES NOT ELSEWHERE SPECIFIED",
         "extraDescription": "Big Contract #1",
         "objectCode": "0499",
@@ -45,10 +46,10 @@ def output_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str,
         "uuid": "tbs-0000000000",
         "vendor_name": "ABC Company",
         "reference_number": "0000000000",
-        "contract_date": "2012-03-31",
-        "contract_period_start": "2012-04-01",
-        "contract_period_end": "2018-03-31",
-        "delivery_date": "",
+        "contract_date": datetime.date(2012, 3, 31),
+        "contract_period_start": datetime.date(2012, 4, 1),
+        "contract_period_end": datetime.date(2018, 3, 31),
+        "delivery_date": None,
         "contract_value": 6000,
         "department": "tbs",
         "source_fiscal": "201213-Q4",
@@ -67,11 +68,11 @@ def test_transform_dir(tmpdir: py._path.local.LocalPath) -> None:
     data1_file.write(json.dumps(data1))
 
     data2_file = tmpdir.join('data2.json')
-    data2 = {
+    data2 = data_template({
         "uuid": "tbs-0000000001",
         "vendorName": "XYZ Company",
         "referenceNumber": "0000000001",
-    }
+    })
     data2_file.write(json.dumps(data2))
 
     output = transform.transform_dir(str(tmpdir))

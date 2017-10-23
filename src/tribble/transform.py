@@ -1,6 +1,8 @@
+import datetime
 import itertools
 import json
 import os
+import re
 import typing
 import pandas
 
@@ -35,7 +37,10 @@ def _json_blobs(input_dir: str) -> typing.Iterator[typing.Dict[str, typing.Any]]
 
 
 def transform(df: pandas.DataFrame) -> pandas.DataFrame:
-    return conform_schema(df)
+    return (
+        df.pipe(conform_schema)
+        .pipe(parse_dates)
+    )
 
 
 def conform_schema(df: pandas.DataFrame) -> pandas.DataFrame:
@@ -55,3 +60,28 @@ def conform_schema(df: pandas.DataFrame) -> pandas.DataFrame:
     columns_to_drop = set(df.columns).difference(set(column_renames.keys()))
 
     return df.rename(columns=column_renames).drop(columns_to_drop, axis=1)
+
+
+DATE_REGEX = re.compile(r'^([\d]{4})[\D]+([\d]{2})[\D]+([\d]{2})')
+
+
+def parse_date(data: str) -> typing.Optional[datetime.date]:
+    match = re.match(DATE_REGEX, data)
+    if not match:
+        return None
+
+    try:
+        year, month, day = int(match[1]), int(match[2]), int(match[3])
+        if month > 12 and day <= 12:
+            month, day = day, month
+        parsed_date = datetime.date(year, month, day)
+    except ValueError:
+        return None
+
+    return parsed_date if match else None
+
+
+def parse_dates(df: pandas.DataFrame) -> pandas.DataFrame:
+    for field_name in ('contract_date', 'contract_period_start', 'contract_period_end', 'delivery_date'):
+        df[field_name] = df[field_name].apply(parse_date)
+    return df

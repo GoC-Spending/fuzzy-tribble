@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, TEXT
+from sqlalchemy import Column, Integer, String, TEXT, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -13,10 +13,10 @@ class Contract(Base):  # type: ignore
     uuid = Column(String(255))
     vendor_name = Column(TEXT, nullable=True)
     reference_number = Column(TEXT, nullable=True)
-    contract_date = Column(String(255), nullable=True)
-    contract_period_start = Column(String(255), nullable=True)
-    contract_period_end = Column(String(255), nullable=True)
-    delivery_date = Column(String(255), nullable=True)
+    contract_date = Column(Date, nullable=True)
+    contract_period_start = Column(Date, nullable=True)
+    contract_period_end = Column(Date, nullable=True)
+    delivery_date = Column(Date, nullable=True)
     contract_value = Column(String(255), nullable=True)
     department = Column(TEXT, nullable=True)
     source_fiscal = Column(String(255), nullable=True)
