@@ -34,7 +34,7 @@ persistent=yes
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
 
-disable=missing-docstring,import-error,redefined-outer-name,protected-access,too-few-public-methods,duplicate-code
+disable=missing-docstring,import-error,redefined-outer-name,protected-access,too-few-public-methods,duplicate-code,bad-whitespace
 
 # ignore these imports for the import-module-only (C2601)
 # ignore-module-import-only=__future__
