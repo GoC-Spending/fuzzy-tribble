@@ -2,7 +2,7 @@ import pandas as pd
 from tribble.transformers import schema_conformer
 
 
-def test_column_rename():
+def test_column_rename() -> None:
     data = pd.DataFrame([{'id': 1, 'foo': 'data'}])
     renames = {
         'id': 'id',
@@ -14,7 +14,7 @@ def test_column_rename():
     ]
 
 
-def test_column_drop():
+def test_column_drop() -> None:
     data = pd.DataFrame([{'id': 1, 'foo': 'bar'}])
     renames = {'id': 'id'}
     output = schema_conformer.SchemaConformer(renames).apply(data)

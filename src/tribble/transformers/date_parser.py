@@ -7,7 +7,7 @@ from tribble.transformers import base
 
 class DateParser(base.BaseTransform):
 
-    def __init__(self, *fields: str):
+    def __init__(self, *fields: str) -> None:
         self._fields = fields or self._FIELDS
 
     _FIELDS = ['contract_date', 'contract_period_start', 'contract_period_end', 'delivery_date']
