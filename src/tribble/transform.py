@@ -6,6 +6,7 @@ import pandas
 from tribble.transformers import fiscal_date_converter
 from tribble.transformers import date_parser
 from tribble.transformers import schema_conformer
+from tribble.transformers import contract_date_cleaner
 
 
 def transform_dir(input_dir: str, grouping_length: int = 100) -> pandas.DataFrame:
@@ -42,4 +43,5 @@ def transform(df: pandas.DataFrame) -> pandas.DataFrame:
         df.pipe(schema_conformer.SchemaConformer().apply)
         .pipe(date_parser.DateParser().apply)
         .pipe(fiscal_date_converter.FiscalDateConverter().apply)
+        .pipe(contract_date_cleaner.ContractDateCleaner().apply)
     )
