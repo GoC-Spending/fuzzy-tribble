@@ -20,7 +20,7 @@ class DateParser(base.BaseTransform):
             return None
 
         try:
-            year, month, day = int(match[1]), int(match[2]), int(match[3])
+            year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
             if month > 12 and day <= 12:
                 month, day = day, month
             parsed_date = datetime.date(year, month, day)

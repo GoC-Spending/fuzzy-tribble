@@ -52,7 +52,7 @@ def output_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str,
         "delivery_date": None,
         "contract_value": 6000,
         "department": "tbs",
-        "source_fiscal": "201213-Q4",
+        "source_fiscal": datetime.date(2013, 1, 1),
     }
     data.update(overrides)
     return data
