@@ -20,6 +20,7 @@ class Contract(Base):  # type: ignore
     contract_value = Column(String(255), nullable=True)
     department = Column(TEXT, nullable=True)
     source_fiscal = Column(Date, nullable=True)
+    object_code = Column(TEXT, nullable=True)
 
     def __repr__(self):
         data_string = ', '.join([f'{key}={getattr(self, key)}'

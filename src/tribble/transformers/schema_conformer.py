@@ -18,7 +18,8 @@ class SchemaConformer(base.BaseTransform):
         'contractValue': 'contract_value',
         'ownerAcronym': 'department',
         'sourceFiscal': 'source_fiscal',
-        'uuid': 'uuid'
+        'uuid': 'uuid',
+        'objectCode': 'object_code',
     }
 
     def apply(self, data: pd.DataFrame) -> pd.DataFrame:
