@@ -2,6 +2,7 @@ import datetime
 import typing
 import pandas
 import pytest
+from tribble import contract
 from tribble import loader
 
 
@@ -22,4 +23,4 @@ def test_load_dataframe() -> None:
     data = [row1, row2]
     df = pandas.DataFrame(data)
 
-    loader.load_dataframe(df)
+    loader.load_dataframe(df, contract.Contract)

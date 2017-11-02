@@ -1,8 +1,6 @@
 import datetime
-import json
 import typing
 import pandas
-import py._path.local
 from tribble import transform
 
 
@@ -58,42 +56,6 @@ def output_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str,
     }
     data.update(overrides)
     return data
-
-
-def test_transform_dir(tmpdir: py._path.local.LocalPath) -> None:
-    data1_file = tmpdir.join('data1.json')
-    data1 = data_template({
-        "uuid": "tbs-0000000000",
-        "vendorName": "ABC Company",
-        "referenceNumber": "0000000000",
-    })
-    data1_file.write(json.dumps(data1))
-
-    data2_file = tmpdir.join('data2.json')
-    data2 = data_template({
-        "uuid": "tbs-0000000001",
-        "vendorName": "XYZ Company",
-        "referenceNumber": "0000000001",
-    })
-    data2_file.write(json.dumps(data2))
-
-    output = transform.transform_dir(str(tmpdir))
-    assert len(output) == 2
-
-
-def test_chunking(tmpdir: py._path.local.LocalPath) -> None:
-    for i in range(0, 100):
-        data = data_template({'uuid': 'tbs-{}'.format(i)})
-        data_file = tmpdir.join('data{}.json'.format(i))
-        data_file.write(json.dumps(data))
-
-    output = transform.transform_dir(str(tmpdir), grouping_length=7)
-    assert len(output) == 100
-
-
-def test_blank_dir(tmpdir: py._path.local.LocalPath) -> None:
-    output = transform.transform_dir(str(tmpdir))
-    assert len(output) == 0  # pylint: disable=len-as-condition
 
 
 def test_transform() -> None:

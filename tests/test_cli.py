@@ -56,10 +56,13 @@ def test_load(input_dir: py._path.local.LocalPath) -> None:
 
     session = contract.Session()
     contracts = list(session.query(contract.Contract))
+    raw_contracts = list(session.query(contract.Contract))
     session.close()
 
     assert len(contracts) == 1
     assert contracts[0].uuid == 'tbs-0000000000'
+    assert len(raw_contracts) == 1
+    assert raw_contracts[0].uuid == 'tbs-0000000000'
 
 
 def test_init_db(db_engine: engine.base.Engine) -> None:
@@ -74,13 +77,18 @@ def test_init_db(db_engine: engine.base.Engine) -> None:
 
     tables = connection.execute("SHOW TABLES LIKE 'contracts';").fetchall()
     assert len(tables) == 1
+    raw_tables = connection.execute("SHOW TABLES LIKE 'contracts';").fetchall()
+    assert len(raw_tables) == 1
 
 
 def test_init_db_with_force(db_engine: engine.base.Engine) -> None:
     connection = db_engine.connect()
     connection.execute("CREATE TABLE contracts (foo INT NOT NULL)")
+    connection.execute("CREATE TABLE raw_contracts (foo INT NOT NULL)")
     table_def = connection.execute("SHOW CREATE TABLE contracts;").fetchall()[0][1]
     assert 'foo' in table_def
+    raw_table_def = connection.execute("SHOW CREATE TABLE raw_contracts;").fetchall()[0][1]
+    assert 'foo' in raw_table_def
 
     runner = click.testing.CliRunner()  # type: ignore
     result = runner.invoke(cli.init_db, ['--force'], obj={'engine': db_engine})
@@ -90,3 +98,6 @@ def test_init_db_with_force(db_engine: engine.base.Engine) -> None:
     table_def = connection.execute("SHOW CREATE TABLE contracts;").fetchall()[0][1]
     assert 'foo' not in table_def
     assert 'uuid' in table_def
+    raw_table_def = connection.execute("SHOW CREATE TABLE raw_contracts;").fetchall()[0][1]
+    assert 'foo' not in raw_table_def
+    assert 'uuid' in raw_table_def

@@ -5,6 +5,7 @@ import tribble.database
 import tribble.transform
 from tribble import contract
 from tribble import loader
+from tribble import reader
 
 
 SPENDING_DB_NAME = 'spending'
@@ -51,5 +52,8 @@ def init_db(ctx: click.core.Context, force: bool) -> None:
 @main.command()
 @click.argument('input-dir')
 def load(input_dir: str) -> None:
-    df = tribble.transform.transform_dir(input_dir)
-    loader.load_dataframe(df)
+    raw_contracts = reader.read_dir(input_dir)
+    contracts = tribble.transform.transform(raw_contracts)
+
+    loader.load_dataframe(raw_contracts, contract.RawContract)
+    loader.load_dataframe(contracts, contract.Contract)
