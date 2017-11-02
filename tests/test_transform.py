@@ -1,11 +1,35 @@
 import datetime
 import typing
 import pandas
+import pytest
 from tribble import transform
 
 
-def data_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
-    data = {
+class DataTemplate:
+
+    def __init__(self, default: typing.Dict[str, typing.Any]) -> None:
+        self._default = default
+
+    def _generate_rows(self, overrides: typing.List[typing.Dict[str, typing.Any]]
+                       ) -> typing.Iterable[typing.Dict[str, typing.Any]]:
+        for row in overrides:
+            assert set(row.keys()).intersection(set(self._default.keys())) == set(row.keys())
+
+            generated_row = self._default.copy()
+            generated_row.update(row)
+            yield generated_row
+
+    def to_df(self, overrides: typing.List[typing.Dict[str, typing.Any]]) -> pandas.DataFrame:
+        return pandas.DataFrame(self._generate_rows(overrides))
+
+    def to_dicts(self, overrides: typing.List[typing.Dict[str, typing.Any]]
+                 ) -> typing.List[typing.Dict[str, typing.Any]]:
+        return list(self._generate_rows(overrides))
+
+
+@pytest.fixture
+def input_template() -> DataTemplate:
+    return DataTemplate({
         "uuid": "tbs-0000000000",
         "vendorName": "ABC Company",
         "referenceNumber": "0000000000",
@@ -34,13 +58,12 @@ def data_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, t
         "yearsDuration": 6,
         "valuePerYear": 1000.0,
         "vendorClean": "Big Contract #1"
-    }
-    data.update(overrides)
-    return data
+    })
 
 
-def output_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
-    data = {
+@pytest.fixture
+def output_template() -> DataTemplate:
+    return DataTemplate({
         "uuid": "tbs-0000000000",
         "vendor_name": "ABC Company",
         "reference_number": "0000000000",
@@ -53,31 +76,64 @@ def output_template(overrides: typing.Dict[str, typing.Any]) -> typing.Dict[str,
         "department": "tbs",
         "source_fiscal": datetime.date(2013, 1, 1),
         "object_code": "0499"
-    }
-    data.update(overrides)
-    return data
+    })
 
 
-def test_transform() -> None:
-    data = pandas.DataFrame([data_template({})])
+def test_transform(input_template: DataTemplate, output_template: DataTemplate) -> None:
+    data = input_template.to_df([{}])
     output = transform.transform(data).to_dict('records')
+    expected = output_template.to_dicts([{}])
+    assert output == expected
 
-    assert output == [output_template({})]
 
-
-def test_bad_contract_dates() -> None:
-    data = data_template({
+def test_bad_contract_dates(input_template: DataTemplate, output_template: DataTemplate) -> None:
+    data = input_template.to_df([{
         'contractDate': '2012-10-10',
         'contractPeriodStart': '0001-01-01',
         'contractPeriodEnd': '1899-12-31',
-    })
-    df = pandas.DataFrame([data])
+    }])
 
-    expected = output_template({
+    expected = output_template.to_dicts([{
         'contract_date': datetime.date(2012, 10, 10),
         'contract_period_start': datetime.date(2012, 10, 10),
         'contract_period_end': datetime.date(2012, 10, 10),
         'reporting_period_start': datetime.date(2012, 10, 10),
         'reporting_period_end': datetime.date(2012, 10, 10),
-    })
-    assert transform.transform(df).to_dict('records') == [expected]
+    }])
+    assert transform.transform(data).to_dict('records') == expected
+
+
+def test_contract_starts_that_go_backwards_in_time(input_template: DataTemplate, output_template: DataTemplate) -> None:
+    data = input_template.to_df([
+        {
+            'contractDate': '2012-01-01',
+            'contractPeriodStart': '2011-12-01',
+            'contractPeriodEnd': '2014-01-01',
+            'sourceFiscal': '2013-01-01',
+        }, {
+            'contractDate': '2013-01-01',
+            'contractPeriodStart': '2010-01-01',
+            'contractPeriodEnd': '2015-01-01',
+            'sourceFiscal': '2013-04-01',
+        }
+    ])
+    output = transform.transform(data).to_dict('records')
+    output = sorted(output, key=lambda r: r['contract_date'])
+
+    expected = output_template.to_dicts([
+        {
+            'contract_date': datetime.date(2012, 1, 1),
+            'contract_period_start': datetime.date(2010, 1, 1),
+            'contract_period_end': datetime.date(2014, 1, 1),
+            'reporting_period_start': datetime.date(2010, 1, 1),
+            'reporting_period_end': datetime.date(2014, 1, 1),
+        }, {
+            'contract_date': datetime.date(2013, 1, 1),
+            'contract_period_start': datetime.date(2010, 1, 1),
+            'contract_period_end': datetime.date(2015, 1, 1),
+            'reporting_period_start': datetime.date(2014, 1, 1),
+            'reporting_period_end': datetime.date(2015, 1, 1),
+        }
+    ])
+    assert output == expected
+
