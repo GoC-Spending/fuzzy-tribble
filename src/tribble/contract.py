@@ -33,3 +33,19 @@ class Contract(Base):  # type: ignore
             return False
         return all([getattr(self, key) == getattr(other, key)
                     for key in self.metadata.tables[self.__tablename__].columns.keys()])
+
+
+class RawContract(Base):  # type: ignore
+    __tablename__ = 'raw_contracts'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    uuid = Column(String(255))
+    vendorName = Column(TEXT, nullable=True)
+    referenceNumber = Column(TEXT, nullable=True)
+    contractDate = Column(TEXT, nullable=True)
+    contractPeriodStart = Column(TEXT, nullable=True)
+    contractPeriodEnd = Column(TEXT, nullable=True)
+    contractValue = Column(String(255), nullable=True)
+    ownerAcronym = Column(TEXT, nullable=True)
+    sourceFiscal = Column(TEXT, nullable=True)
+    objectCode = Column(TEXT, nullable=True)
