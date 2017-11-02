@@ -63,3 +63,21 @@ def test_transform() -> None:
     output = transform.transform(data).to_dict('records')
 
     assert output == [output_template({})]
+
+
+def test_bad_contract_dates() -> None:
+    data = data_template({
+        'contractDate': '2012-10-10',
+        'contractPeriodStart': '0001-01-01',
+        'contractPeriodEnd': '1899-12-31',
+    })
+    df = pandas.DataFrame([data])
+
+    expected = output_template({
+        'contract_date': datetime.date(2012, 10, 10),
+        'contract_period_start': datetime.date(2012, 10, 10),
+        'contract_period_end': datetime.date(2012, 10, 10),
+        'reporting_period_start': datetime.date(2012, 10, 10),
+        'reporting_period_end': datetime.date(2012, 10, 10),
+    })
+    assert transform.transform(df).to_dict('records') == [expected]
