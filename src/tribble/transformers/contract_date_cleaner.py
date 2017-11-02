@@ -1,3 +1,4 @@
+import datetime
 import pandas as pd
 from tribble.transformers import base
 
@@ -8,6 +9,14 @@ class ContractDateCleaner(base.BaseTransform):
     def _set_null_contract_dates(row: pd.Series) -> pd.Series:
         if row['contract_date'] is None:
             row['contract_date'] = row['source_fiscal']
+        return row
+
+    @staticmethod
+    def _clear_invalid_dates(row: pd.Series) -> pd.Series:
+        if row['contract_period_start'] and row['contract_period_start'] < datetime.date(2000, 1, 1):
+            row['contract_period_start'] = None
+        if row['contract_period_end'] and row['contract_period_end'] < datetime.date(2000, 1, 1):
+            row['contract_period_end'] = None
         return row
 
     @staticmethod
@@ -30,5 +39,6 @@ class ContractDateCleaner(base.BaseTransform):
 
     def apply(self, data: pd.DataFrame) -> pd.DataFrame:
         cleaned = data.apply(self._set_null_contract_dates, reduce=False, axis=1) \
+            .apply(self._clear_invalid_dates, reduce=False, axis=1) \
             .apply(self._clean_row, reduce=False, axis=1)
         return cleaned.drop(['delivery_date'], axis=1)
