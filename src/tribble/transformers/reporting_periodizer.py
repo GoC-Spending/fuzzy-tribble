@@ -28,11 +28,11 @@ class ReportingPeriodizer(base.BaseTransform):
         return row
 
     def apply(self, data: pd.DataFrame) -> pd.DataFrame:
-        data = data.sort_values(['uuid', 'contract_period_start', 'source_fiscal'])
-        grouped_data = data.groupby('uuid', sort=False)
-        data['next_source_fiscal'] = grouped_data['source_fiscal'].shift(-1)
-        data['last_contract_period_end'] = grouped_data['contract_period_end'].shift(1)
+        data['next_source_fiscal'] = data['source_fiscal'].shift(-1)
+        data['last_contract_period_end'] = data['contract_period_end'].shift(1)
 
-        return data.apply(self._period_ends, reduce=False, axis=1) \
-            .apply(self._period_starts, reduce=False, axis=1) \
-            .drop(['next_source_fiscal', 'last_contract_period_end'], axis=1)
+        data = data.apply(self._period_ends, reduce=False, axis=1) \
+            .apply(self._period_starts, reduce=False, axis=1)
+        del data['next_source_fiscal']
+        del data['last_contract_period_end']
+        return data
