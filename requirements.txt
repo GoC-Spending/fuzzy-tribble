@@ -3,7 +3,7 @@ click==6.7
 lxml==4.0.0
 requests==2.18.4
 pandas==0.20.3
-pylint==1.7.2
+pylint==1.7.3
 mypy==0.521
 pytest==3.2.2
 sqlalchemy==1.1.14
