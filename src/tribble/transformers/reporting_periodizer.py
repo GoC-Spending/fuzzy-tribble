@@ -37,6 +37,8 @@ class ReportingPeriodizer(base.BaseTransform):
 
     def apply(self, data: pd.DataFrame) -> pd.DataFrame:
         data = data.sort_values('source_fiscal')
-        data['reporting_period_start'] = self._period_starts(data['source_fiscal'], data['contract_period_start'], data['contract_period_end'])
+        data['reporting_period_start'] = self._period_starts(data['source_fiscal'],
+                                                             data['contract_period_start'],
+                                                             data['contract_period_end'])
         data['reporting_period_end'] = self._period_ends(data['reporting_period_start'], data['contract_period_end'])
         return data
