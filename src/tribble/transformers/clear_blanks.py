@@ -3,6 +3,7 @@ from tribble.transformers import base
 
 
 class ClearBlanks(base.BaseTransform):
+    """Replaces empty values in the specified or default fields with `None`."""
 
     FIELDS_TO_CLEAR = ['object_code']
 

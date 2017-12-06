@@ -4,6 +4,7 @@ from tribble.transformers import base
 
 
 class SchemaConformer(base.BaseTransform):
+    """Renames columns from the raw source to the expected database-friendly name. Drops extra columns."""
 
     def __init__(self, renames: typing.Optional[typing.Dict[str, str]] = None) -> None:
         self._renames = renames or self.COLUMN_RENAMES
