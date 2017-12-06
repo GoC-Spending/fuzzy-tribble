@@ -1,5 +1,7 @@
+import typing
 import pandas
 import pandas.core.groupby
+from tribble.transformers import base
 from tribble.transformers import clear_blanks
 from tribble.transformers import contract_date_cleaner
 from tribble.transformers import contract_start_normalizer
@@ -9,21 +11,34 @@ from tribble.transformers import reporting_periodizer
 from tribble.transformers import schema_conformer
 
 
+TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
+    schema_conformer.SchemaConformer,
+    date_parser.DateParser,
+    fiscal_date_converter.FiscalDateConverter,
+    contract_date_cleaner.ContractDateCleaner,
+    clear_blanks.ClearBlanks,
+]
+
+
+GROUP_TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
+    contract_start_normalizer.ContractStartNormalizer,
+    reporting_periodizer.ReportingPeriodizer,
+]
+
+
 def transform(df: pandas.DataFrame) -> pandas.DataFrame:
-    df = (
-        df.pipe(schema_conformer.SchemaConformer().apply)
-        .pipe(date_parser.DateParser().apply)
-        .pipe(fiscal_date_converter.FiscalDateConverter().apply)
-        .pipe(contract_date_cleaner.ContractDateCleaner().apply)
-        .pipe(clear_blanks.ClearBlanks().apply)
-    )
-    return df.groupby('uuid').apply(_group_transform)
+    df = _apply_transform_list(df, TRANSFORMERS)
+    return df.groupby('uuid').apply(_group_transform_df)
 
 
-def _group_transform(df: pandas.DataFrame) -> pandas.DataFrame:
+def _apply_transform_list(df: pandas.DataFrame,
+                          transformer_classes: typing.List[typing.Type[base.BaseTransform]]
+                         ) -> pandas.DataFrame:
+    for transformer_class in transformer_classes:
+        df = transformer_class().apply(df)
+    return df
+
+
+def _group_transform_df(df: pandas.DataFrame) -> pandas.DataFrame:
     df = df.sort_values(['contract_period_start', 'source_fiscal'])
-
-    return (
-        df.pipe(contract_start_normalizer.ContractStartNormalizer().apply)
-        .pipe(reporting_periodizer.ReportingPeriodizer().apply)
-    )
+    return _apply_transform_list(df, GROUP_TRANSFORMERS)
