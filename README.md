@@ -32,3 +32,8 @@ Welcome to `fuzzy-tribble`! Here are steps to follow once you’ve cloned the re
 5. Load your MySQL installation with your viewer of choice and check out the tables in your database!
     * `raw_contracts` will contain the input data, unprocessed.
     * `contracts` will contain the processed contract data, run through `fuzzy-tribble`’s transformers.
+
+### Important notes
+
+* Make sure to provide the parameters before the relevant command. For global options (e.g. `--user`), they must come before the command (e.g. `create_db`). `tribble --user USER create_db` will work; `tribble create_db --user USER` will not. For command options (e.g. `--runtime-user` for the `create_db` command), they must come after the command.
+* Run `--help` after any command to get documentation specific to it. `tribble --help` will give you information about the package in general. `tribble [command_name] --help` (where `[command_name]` is a command like `create_db`) will give you information about the command specified.
