@@ -5,6 +5,7 @@ from tribble.transformers import base
 
 
 class ReportingPeriodizer(base.BaseTransform):
+    """Breaks up each row for a single `uuid` value into non-overlapping reporting period values."""
 
     MAX_DATE = datetime.date(9999, 12, 31)
 

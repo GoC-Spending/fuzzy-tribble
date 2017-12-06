@@ -7,6 +7,10 @@ from tribble.transformers import base
 
 
 class FiscalDateConverter(base.BaseTransform):
+    """Converts 'fiscal date' values to valid date values representing the beginning of the quarter.
+
+    e.g. 201213-Q4 becomes 2013-01-01
+    Values that can't be properly interpreted are converted to `None`."""
 
     _FISCAL_DATE_COLUMN = 'source_fiscal'
     _PATTERN = r'^([\d]{4})([\d]{2})-Q(\d)'

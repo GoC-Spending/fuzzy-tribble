@@ -6,6 +6,9 @@ from tribble.transformers import base
 
 
 class DateParser(base.BaseTransform):
+    """Attempts to parse date strings into date columns.
+
+    Converts values it can't convert to `None`."""
 
     def __init__(self, *fields: str) -> None:
         self._fields = fields or self._FIELDS

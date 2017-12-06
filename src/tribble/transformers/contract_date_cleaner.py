@@ -4,6 +4,10 @@ from tribble.transformers import base
 
 
 class ContractDateCleaner(base.BaseTransform):
+    """Standardizes `contract_period_start` and `contract_period_end` date values.
+
+    Some contracts have only a `delivery_date` value. These are converted to
+    identical contract period start and end values, and `delivery_date` is dropped."""
 
     @staticmethod
     def _set_null_contract_dates(row: pd.Series) -> pd.Series:
