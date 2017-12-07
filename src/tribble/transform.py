@@ -15,6 +15,7 @@ TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
     schema_conformer.SchemaConformer,
     date_parser.DateParser,
     fiscal_date_converter.FiscalDateConverter,
+    fiscal_date_converter.BlankFiscalDateFilter,
     contract_date_cleaner.ContractDateCleaner,
     clear_blanks.ClearBlanks,
 ]
