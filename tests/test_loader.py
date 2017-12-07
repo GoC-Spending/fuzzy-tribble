@@ -15,6 +15,7 @@ def test_load_dataframe() -> None:
         'contract_period_end': contract_date,
         'reporting_period_start': contract_date,
         'reporting_period_end': contract_date,
+        'reporting_period_value': 1.00
     }
     row1 = row.copy()
     row1['uuid'] = 'foo'
