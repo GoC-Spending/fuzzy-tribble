@@ -122,32 +122,14 @@ def test_fiscal_date_converter(input_template: DataTemplate, output_template: Da
     assert output == expected
 
 
-def test_fiscal_date_converting_bad_data(input_template: DataTemplate, output_template: DataTemplate) -> None:
+def test_fiscal_date_converting_bad_data(input_template: DataTemplate) -> None:
     data = input_template.to_df([
         {'uuid': 1, 'sourceFiscal': '2012-04-01'},
         {'uuid': 2, 'sourceFiscal': '201213'},
         {'uuid': 3, 'sourceFiscal': '201213-Q5'},
     ])
     output = transform.transform(data).to_dict('records')
-    expected = output_template.to_dicts([
-        {
-            'uuid': 1,
-            'source_fiscal': None,
-            'reporting_period_start': datetime.date(2012, 4, 1),
-            'reporting_period_end': datetime.date(2018, 3, 31),
-        }, {
-            'uuid': 2,
-            'source_fiscal': None,
-            'reporting_period_start': datetime.date(2012, 4, 1),
-            'reporting_period_end': datetime.date(2018, 3, 31),
-        }, {
-            'uuid': 3,
-            'source_fiscal': None,
-            'reporting_period_start': datetime.date(2012, 4, 1),
-            'reporting_period_end': datetime.date(2018, 3, 31),
-        },
-    ])
-    assert output == expected
+    assert output == []
 
 
 def test_bad_contract_dates(input_template: DataTemplate, output_template: DataTemplate) -> None:
@@ -238,3 +220,12 @@ def test_contract_starts_that_go_backwards_in_time(input_template: DataTemplate,
         }
     ])
     assert output == expected
+
+
+def test_blank_fiscal_rows_dropped(input_template: DataTemplate) -> None:
+    data = input_template.to_df([
+        {'sourceFiscal': ''},
+    ])
+
+    output = transform.transform(data).to_dict('records')
+    assert output == []

@@ -27,3 +27,15 @@ def test_bad_data() -> None:
         {'id': 2, 'data': None},
         {'id': 3, 'data': None},
     ]
+
+
+def test_removes_blank_fiscal_date() -> None:
+    data = pd.DataFrame([
+        {'id': 1, 'data': None},
+        {'id': 2, 'data': datetime.date(2012, 4, 1)}
+    ])
+
+    output = fiscal_date_converter.BlankFiscalDateFilter('data').apply(data)
+    assert sorted(output.to_dict('records'), key=lambda row: row['id']) == [
+        {'id': 2, 'data': datetime.date(2012, 4, 1)},
+    ]

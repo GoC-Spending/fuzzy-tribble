@@ -5,6 +5,8 @@ from dateutil import relativedelta
 import pandas as pd
 from tribble.transformers import base
 
+_FISCAL_DATE_COLUMN = 'source_fiscal'
+
 
 class FiscalDateConverter(base.BaseTransform):
     """Converts 'fiscal date' values to valid date values representing the beginning of the quarter.
@@ -12,11 +14,10 @@ class FiscalDateConverter(base.BaseTransform):
     e.g. 201213-Q4 becomes 2013-01-01
     Values that can't be properly interpreted are converted to `None`."""
 
-    _FISCAL_DATE_COLUMN = 'source_fiscal'
     _PATTERN = r'^([\d]{4})([\d]{2})-Q(\d)'
 
     def __init__(self, fiscal_date_column: typing.Optional[str] = None) -> None:
-        self._fiscal_date_column = fiscal_date_column or self._FISCAL_DATE_COLUMN
+        self._fiscal_date_column = fiscal_date_column or _FISCAL_DATE_COLUMN
 
     @classmethod
     def _convert_date(cls, data: str) -> typing.Optional[datetime.date]:
@@ -40,3 +41,13 @@ class FiscalDateConverter(base.BaseTransform):
     def apply(self, data: pd.DataFrame) -> pd.DataFrame:
         data[self._fiscal_date_column] = data[self._fiscal_date_column].apply(self._convert_date)
         return data
+
+
+class BlankFiscalDateFilter(base.BaseTransform):
+    """Removes rows with blank (null) `fiscal date` values."""
+
+    def __init__(self, fiscal_date_column: typing.Optional[str] = None) -> None:
+        self._fiscal_date_column = fiscal_date_column or _FISCAL_DATE_COLUMN
+
+    def apply(self, data: pd.DataFrame) -> pd.DataFrame:
+        return data.dropna(axis=0, subset=[self._fiscal_date_column])
