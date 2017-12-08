@@ -11,14 +11,17 @@ Processing GoC-Spending data output
 
 - Create a python virtual environment
   - `python -m venv env`
+  - `source env/bin/activate`
 - Install required python packages
   - `pip install -r requirements.txt`
   - `pip install -e .` 
 
 ## Usage
 
-- `source env/bin/activate` (run each time you open the repo in a shell, to activate the virtual environment)
-- `tribble --help`
+### General tips
+
+- Run `source env/bin/activate` each time you open the repo in a shell, to activate the virtual environment
+* Run `--help` after any command to get documentation specific to it. `tribble --help` will give you information about the package in general. `tribble [command_name] --help` (where `[command_name]` is a command like `create_db`) will give you information about the command specified.
 
 ### First run
 
@@ -37,4 +40,3 @@ Welcome to `fuzzy-tribble`! Here are steps to follow once you’ve cloned the re
 ### Important notes
 
 * Make sure to provide the parameters before the relevant command. For global options (e.g. `--user`), they must come before the command (e.g. `create_db`). `tribble --user USER create_db` will work; `tribble create_db --user USER` will not. For command options (e.g. `--runtime-user` for the `create_db` command), they must come after the command.
-* Run `--help` after any command to get documentation specific to it. `tribble --help` will give you information about the package in general. `tribble [command_name] --help` (where `[command_name]` is a command like `create_db`) will give you information about the command specified.
