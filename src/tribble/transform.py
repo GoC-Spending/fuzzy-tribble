@@ -33,9 +33,10 @@ GROUP_TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
 def transform(df: pandas.DataFrame) -> pandas.DataFrame:
     print("Applying " + str(len(TRANSFORMERS)) + " regular transformers:")
     df = _apply_transform_list(df, TRANSFORMERS, show_progress=True)
-    gb = df.groupby('uuid')
+    uuid_grouped = df.groupby('uuid')
     tqdm.pandas()
-    print("Applying group transformers to " + str(len(gb)) + " uuids (needs " + str(len(gb)+1) + " operations):")
+    print("Applying group transformers to " + str(len(uuid_grouped)) + " uuids " + \
+          "(needs " + str(len(uuid_grouped)+1) + " operations):")
     return df.groupby('uuid').progress_apply(_group_transform_df)
 
 
