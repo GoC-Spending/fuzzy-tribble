@@ -10,6 +10,7 @@ from tribble.transformers import fiscal_date_converter
 from tribble.transformers import reporting_period_value
 from tribble.transformers import reporting_periodizer
 from tribble.transformers import schema_conformer
+from tqdm import tqdm
 
 
 TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
@@ -30,14 +31,19 @@ GROUP_TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
 
 
 def transform(df: pandas.DataFrame) -> pandas.DataFrame:
-    df = _apply_transform_list(df, TRANSFORMERS)
-    return df.groupby('uuid').apply(_group_transform_df)
+    print("Applying " + str(len(TRANSFORMERS)) + " regular transformers:")
+    df = _apply_transform_list(df, TRANSFORMERS, show_progress=True)
+    gb = df.groupby('uuid')
+    tqdm.pandas()
+    print("Applying group transformers to " + str(len(gb)) + " uuids (needs " + str(len(gb)+1) + " operations):")
+    return df.groupby('uuid').progress_apply(_group_transform_df)
 
 
 def _apply_transform_list(df: pandas.DataFrame,
-                          transformer_classes: typing.List[typing.Type[base.BaseTransform]]
+                          transformer_classes: typing.List[typing.Type[base.BaseTransform]],
+                          show_progress=False
                          ) -> pandas.DataFrame:
-    for transformer_class in transformer_classes:
+    for transformer_class in transformer_classes if not show_progress else tqdm(transformer_classes):
         df = transformer_class().apply(df)
     return df
 
