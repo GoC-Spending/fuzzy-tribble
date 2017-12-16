@@ -10,3 +10,9 @@ script:
   - docker run jasonmwhite/tribble script/run_tests.sh
   - docker run jasonmwhite/tribble pylint src tests
   - docker run jasonmwhite/tribble mypy src tests
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+    docker push yowct/fuzzy-tribble;
+    fi
