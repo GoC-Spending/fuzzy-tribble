@@ -2,6 +2,7 @@ import getpass
 import os
 import random
 import typing
+import warnings
 import pytest
 from sqlalchemy import engine
 from tribble import contract
@@ -29,31 +30,35 @@ def db_name(db_host: str, db_user: str) -> typing.Iterable[str]:
     admin_password = os.environ.get('TRIBBLE_DB_ADMIN_PASSWORD')
 
     creds = database.Creds(host=db_host, user=admin_user, password=admin_password, database='mysql')  # pylint: disable=no-value-for-parameter
-    engine = database.connect_db(creds)
 
-    connection = engine.connect()
-    db_names = connection.execute('SHOW DATABASES;').fetchall()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', ".*\'@@tx_isolation\' is deprecated.*")
+        engine = database.connect_db(creds)
+        connection = engine.connect()
 
-    for (db_name,) in db_names:
-        if db_name.startswith('tribble_test_'):
-            engine.execute(f'DROP SCHEMA {db_name}')
+        db_names = connection.execute('SHOW DATABASES;').fetchall()
 
-    database_name = 'tribble_test_{0:0>6}'.format(random.randrange(1, 1000000))
-    connection.execute(f'CREATE SCHEMA {database_name};')
+        for (db_name,) in db_names:
+            if db_name.startswith('tribble_test_'):
+                engine.execute(f'DROP SCHEMA {db_name}')
 
-    connection.execute(f'USE {database_name};')
-    connection.execute(f'GRANT ALL ON {database_name}.* TO {db_user}@{db_host};')
-    connection.execute('FLUSH PRIVILEGES;')
+        database_name = 'tribble_test_{0:0>6}'.format(random.randrange(1, 1000000))
+        connection.execute(f'CREATE SCHEMA {database_name};')
 
-    connection.close()
+        connection.execute(f'USE {database_name};')
+        connection.execute(f'GRANT ALL ON {database_name}.* TO {db_user}@{db_host};')
+        connection.execute('FLUSH PRIVILEGES;')
 
-    yield database_name
+        connection.close()
 
-    connection = engine.connect()
-    connection.execute(f'DROP SCHEMA {database_name};')
-    connection.execute(f'REVOKE ALL ON {database_name}.* FROM {db_user}@{db_host};')
-    connection.execute('FLUSH PRIVILEGES;')
-    connection.close()
+        yield database_name
+
+        connection = engine.connect()
+
+        connection.execute(f'DROP SCHEMA {database_name};')
+        connection.execute(f'REVOKE ALL ON {database_name}.* FROM {db_user}@{db_host};')
+        connection.execute('FLUSH PRIVILEGES;')
+        connection.close()
 
 
 @pytest.fixture
