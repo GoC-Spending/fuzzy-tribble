@@ -29,7 +29,7 @@ def db_name(db_host: str, db_user: str) -> typing.Iterable[str]:
     admin_user = os.environ.get('TRIBBLE_DB_ADMIN_USER', 'root')
     admin_password = os.environ.get('TRIBBLE_DB_ADMIN_PASSWORD')
 
-    creds = database.Creds(host=db_host, user=admin_user, password=admin_password, database='mysql')  # pylint: disable=no-value-for-parameter
+    creds = database.Creds(host=db_host, user=admin_user, password=admin_password, database='mysql')
 
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', ".*\'@@tx_isolation\' is deprecated.*")
@@ -63,7 +63,7 @@ def db_name(db_host: str, db_user: str) -> typing.Iterable[str]:
 
 @pytest.fixture
 def db_engine(db_host: str, db_user: str, db_password: str, db_name: str) -> engine.base.Engine:
-    creds = database.Creds(host=db_host, user=db_user, password=db_password, database=db_name)  # pylint: disable=no-value-for-parameter
+    creds = database.Creds(host=db_host, user=db_user, password=db_password, database=db_name)
     eng = database.connect_db(creds)
     contract.Session.configure(bind=eng)
     return eng
