@@ -24,7 +24,7 @@ def main(ctx: click.core.Context, host: str, user: str, password: typing.Optiona
 
     Type --help after any subcommand for additional help."""
     ctx.obj = {}
-    creds = tribble.database.Creds(host, user, password, schema)  # pylint: disable=too-many-function-args
+    creds = tribble.database.Creds(host, user, password, schema)
     engine = tribble.database.connect_db(creds)
     contract.Session.configure(bind=engine)
     ctx.obj['creds'] = creds
@@ -41,7 +41,7 @@ def create_db(ctx: click.core.Context, runtime_user: str, runtime_host: str, for
 
     Needs to be run with admin privileges, e.g. `tribble --user root create_db`"""
     passed_creds = ctx.obj['creds']
-    creds = tribble.database.Creds(host=passed_creds.host, user=passed_creds.user,  # pylint: disable=no-value-for-parameter
+    creds = tribble.database.Creds(host=passed_creds.host, user=passed_creds.user,
                                    password=passed_creds.password, database='mysql')
     engine = tribble.database.connect_db(creds)
     tribble.database.create_db(engine, passed_creds.database, runtime_user, runtime_host, force)
