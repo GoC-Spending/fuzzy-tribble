@@ -5,10 +5,12 @@ import tribble.database
 import tribble.transform
 from tribble import contract
 from tribble import loader
+from tribble import log
 from tribble import reader
 
 
 SPENDING_DB_NAME = 'spending'
+LOGGER = log.get_logger(__name__)
 
 
 @click.group()
@@ -67,5 +69,7 @@ def load(input_dir: str) -> None:
     raw_contracts = reader.read_dir(input_dir)
     contracts = tribble.transform.transform(raw_contracts)
 
+    LOGGER.info(f'Loading data from {input_dir} in database.')
     loader.load_dataframe(raw_contracts, contract.RawContract)
     loader.load_dataframe(contracts, contract.Contract)
+    LOGGER.info('Finished loading data.')
