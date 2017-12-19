@@ -33,9 +33,10 @@ class ReportingPeriodizer(base.BaseTransform):
                        contract_period_end: pd.Series) -> pd.Series:
         prior_contract_period_end = contract_period_end.shift(1)
 
-        return np.where(pd.isnull(prior_contract_period_end),
-                        contract_period_start,
-                        cls._greatest(source_fiscal, contract_period_start, contract_date))
+        starts = np.where(pd.isnull(prior_contract_period_end),
+                          contract_period_start,
+                          cls._greatest(source_fiscal, contract_period_start, contract_date))
+        return cls._least(starts, contract_period_end)
 
     @classmethod
     def _period_ends(cls, period_start: pd.Series, contract_period_end: pd.Series) -> pd.Series:
