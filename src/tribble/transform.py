@@ -7,6 +7,7 @@ from tribble.transformers import contract_date_cleaner
 from tribble.transformers import contract_start_normalizer
 from tribble.transformers import date_parser
 from tribble.transformers import fiscal_date_converter
+from tribble.transformers import reporting_period_value
 from tribble.transformers import reporting_periodizer
 from tribble.transformers import schema_conformer
 
@@ -24,6 +25,7 @@ TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
 GROUP_TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
     contract_start_normalizer.ContractStartNormalizer,
     reporting_periodizer.ReportingPeriodizer,
+    reporting_period_value.ReportingPeriodValue,
 ]
 
 

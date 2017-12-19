@@ -22,6 +22,7 @@ class Contract(Base):  # type: ignore
     object_code = Column(TEXT, nullable=True)
     reporting_period_start = Column(Date, nullable=False)
     reporting_period_end = Column(Date, nullable=False)
+    reporting_period_value = Column(NUMERIC(20, 2), nullable=False)
 
     def __repr__(self):
         data_string = ', '.join([f'{key}={getattr(self, key)}'

@@ -74,6 +74,7 @@ def output_template() -> DataTemplate:
         "contract_period_end": datetime.date(2018, 3, 31),
         "reporting_period_start": datetime.date(2012, 4, 1),
         "reporting_period_end": datetime.date(2018, 3, 31),
+        "reporting_period_value": 6000.00,
         "contract_value": 6000,
         "department": "tbs",
         "source_fiscal": datetime.date(2013, 1, 1),
@@ -102,6 +103,7 @@ def test_fiscal_date_converter(input_template: DataTemplate, output_template: Da
             'source_fiscal': datetime.date(2012, 4, 1),
             'reporting_period_start': datetime.date(2012, 4, 1),
             'reporting_period_end': datetime.date(2018, 3, 31),
+            'reporting_period_value': 6000.00
         }, {
             'uuid': '2',
             'source_fiscal': datetime.date(2012, 7, 1),
@@ -172,6 +174,7 @@ def test_reporting_periods_broken_up(input_template: DataTemplate, output_templa
             'source_fiscal': datetime.date(2012, 10, 1),
             'reporting_period_start': datetime.date(2012, 10, 1),
             'reporting_period_end': datetime.date(2014, 1, 1),
+            'reporting_period_value': 3343.07,
         }, {
             'contract_date': datetime.date(2014, 1, 2),
             'contract_period_start': datetime.date(2012, 10, 1),
@@ -179,6 +182,7 @@ def test_reporting_periods_broken_up(input_template: DataTemplate, output_templa
             'source_fiscal': datetime.date(2014, 1, 1),
             'reporting_period_start': datetime.date(2014, 1, 2),
             'reporting_period_end': datetime.date(2015, 12, 31),
+            'reporting_period_value': 2656.93,
         }
     ])
 
@@ -210,6 +214,7 @@ def test_contract_starts_that_go_backwards_in_time(input_template: DataTemplate,
             'source_fiscal': datetime.date(2013, 1, 1),
             'reporting_period_start': datetime.date(2010, 1, 1),
             'reporting_period_end': datetime.date(2013, 3, 31),
+            'reporting_period_value': 4867.31,
         }, {
             'contract_date': datetime.date(2013, 1, 1),
             'contract_period_start': datetime.date(2010, 1, 1),
@@ -217,6 +222,7 @@ def test_contract_starts_that_go_backwards_in_time(input_template: DataTemplate,
             'source_fiscal': datetime.date(2013, 4, 1),
             'reporting_period_start': datetime.date(2013, 4, 1),
             'reporting_period_end': datetime.date(2015, 1, 1),
+            'reporting_period_value': 1132.69,
         }
     ])
     assert output == expected
