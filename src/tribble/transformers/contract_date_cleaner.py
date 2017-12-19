@@ -41,8 +41,14 @@ class ContractDateCleaner(base.BaseTransform):
 
         return row
 
+    @staticmethod
+    def _end_not_before_start(row: pd.Series) -> pd.Series:
+        row['contract_period_end'] = max(row['contract_period_end'], row['contract_period_start'])
+        return row
+
     def apply(self, data: pd.DataFrame) -> pd.DataFrame:
         cleaned = data.apply(self._set_null_contract_dates, reduce=False, axis=1) \
             .apply(self._clear_invalid_dates, reduce=False, axis=1) \
-            .apply(self._clean_row, reduce=False, axis=1)
+            .apply(self._clean_row, reduce=False, axis=1) \
+            .apply(self._end_not_before_start, reduce=False, axis=1)
         return cleaned.drop(['delivery_date'], axis=1)
