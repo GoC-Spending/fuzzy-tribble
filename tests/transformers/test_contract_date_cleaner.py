@@ -93,3 +93,19 @@ def test_contract_date_and_contract_period_end(template: typing.Dict) -> None:
         'contract_period_end': datetime.date(2017, 3, 15),
         'source_fiscal': datetime.date(2017, 1, 1),
     }]
+
+
+def test_contract_end_before_start(template: typing.Dict) -> None:
+    template.update({
+        'contract_date': datetime.date(2017, 4, 16),
+        'contract_period_end': datetime.date(2017, 4, 15),
+        'contract_period_start': datetime.date(2017, 4, 16),
+    })
+    data = pd.DataFrame([template])
+    output = contract_date_cleaner.ContractDateCleaner().apply(data)
+    assert output.to_dict('records') == [{
+        'contract_date': datetime.date(2017, 4, 16),
+        'contract_period_start': datetime.date(2017, 4, 16),
+        'contract_period_end': datetime.date(2017, 4, 16),
+        'source_fiscal': datetime.date(2017, 1, 1),
+    }]
