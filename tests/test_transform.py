@@ -171,13 +171,13 @@ def test_reporting_periods_broken_up(input_template: DataTemplate, output_templa
             'contract_period_end': datetime.date(2014, 12, 31),
             'source_fiscal': datetime.date(2012, 10, 1),
             'reporting_period_start': datetime.date(2012, 10, 1),
-            'reporting_period_end': datetime.date(2013, 12, 31),
+            'reporting_period_end': datetime.date(2014, 1, 1),
         }, {
             'contract_date': datetime.date(2014, 1, 2),
             'contract_period_start': datetime.date(2012, 10, 1),
             'contract_period_end': datetime.date(2015, 12, 31),
             'source_fiscal': datetime.date(2014, 1, 1),
-            'reporting_period_start': datetime.date(2014, 1, 1),
+            'reporting_period_start': datetime.date(2014, 1, 2),
             'reporting_period_end': datetime.date(2015, 12, 31),
         }
     ])
