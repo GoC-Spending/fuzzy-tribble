@@ -154,3 +154,41 @@ def test_multiple_amendments_in_one_source_fiscal() -> None:
             'contract_date': datetime.date(2015, 1, 1),
         }
     ]
+
+
+def test_contract_date_after_contract_end() -> None:
+    data = pd.DataFrame([
+        {
+            'uuid': 1,
+            'contract_period_start': datetime.date(2014, 1, 1),
+            'contract_period_end': datetime.date(2014, 3, 31),
+            'source_fiscal': datetime.date(2014, 1, 1),
+            'contract_date': datetime.date(2014, 1, 1),
+        }, {
+            'uuid': 1,
+            'contract_period_start': datetime.date(2014, 1, 1),
+            'contract_period_end': datetime.date(2014, 3, 31),
+            'source_fiscal': datetime.date(2014, 4, 1),
+            'contract_date': datetime.date(2014, 5, 1),
+        }
+    ])
+    output = reporting_periodizer.ReportingPeriodizer().apply(data)
+    assert sorted(output.to_dict('records'), key=lambda row: row['contract_period_start']) == [
+        {
+            'uuid': 1,
+            'contract_period_start': datetime.date(2014, 1, 1),
+            'contract_period_end': datetime.date(2014, 3, 31),
+            'source_fiscal': datetime.date(2014, 1, 1),
+            'contract_date': datetime.date(2014, 1, 1),
+            'reporting_period_start': datetime.date(2014, 1, 1),
+            'reporting_period_end': datetime.date(2014, 3, 30),
+        }, {
+            'uuid': 1,
+            'contract_period_start': datetime.date(2014, 1, 1),
+            'contract_period_end': datetime.date(2014, 3, 31),
+            'source_fiscal': datetime.date(2014, 4, 1),
+            'contract_date': datetime.date(2014, 5, 1),
+            'reporting_period_start': datetime.date(2014, 3, 31),
+            'reporting_period_end': datetime.date(2014, 3, 31),
+        }
+    ]
