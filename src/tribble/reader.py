@@ -3,16 +3,17 @@ import json
 import os
 import typing
 import pandas as pd
-from tqdm import tqdm
-
+from tribble import log
+from tribble.log import tqdm
 
 T = typing.TypeVar('T')
+LOGGER = log.get_logger(__name__)
 
 
 def _json_blobs(input_dir: str) -> typing.Iterator[typing.Dict[str, typing.Any]]:
     input_filenames = [os.path.join(input_dir, dir_name) for dir_name in os.listdir(input_dir)]
 
-    print("Reading " + str(len(input_filenames)) + " files:")
+    LOGGER.info("Reading " + str(len(input_filenames)) + " files:")
     for filename in tqdm(input_filenames):
         with open(filename) as input_file:
             yield json.loads(input_file.read())
