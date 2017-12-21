@@ -98,7 +98,7 @@ class TqdmLog(tqdm):
                             res = func(item, *args, **kwargs)
                         except Exception: # pylint: disable=W0703
                                           # needs to be general
-                            print('')  # kinda dirty but ensures that the next log line 
+                            print('')  # kinda dirty but ensures that the next log line
                                        # is not appended to the last output line
                             LOGGER.info(f'Failed on pandas apply during the {count}. invocation of the ' +
                                         f'provided apply function processing item: \n{item}')
