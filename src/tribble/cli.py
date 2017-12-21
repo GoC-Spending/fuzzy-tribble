@@ -74,4 +74,3 @@ def load(input_dir: str) -> None:
     loader.load_dataframe(raw_contracts, contract.RawContract)
     loader.load_dataframe(contracts, contract.Contract)
     LOGGER.info('Finished.')
-
