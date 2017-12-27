@@ -66,10 +66,11 @@ def load(input_dir: str) -> None:
     """Load data from scraped JSON files into the database.
 
     To download this data, first run `git clone https://github.com/GoC-Spending/goc-spending-data` in another folder."""
+    LOGGER.info(f'Loading data from {input_dir}.')
     raw_contracts = reader.read_dir(input_dir)
     contracts = tribble.transform.transform(raw_contracts)
 
-    LOGGER.info(f'Loading data from {input_dir} in database.')
+    LOGGER.info(f'Storing in db ...')
     loader.load_dataframe(raw_contracts, contract.RawContract)
     loader.load_dataframe(contracts, contract.Contract)
-    LOGGER.info('Finished loading data.')
+    LOGGER.info('Finished.')
