@@ -13,13 +13,8 @@ def input_dir(tmpdir: py._path.local.LocalPath) -> py._path.local.LocalPath:
 
 
 @pytest.fixture
-def input_sub_dir(input_dir: py._path.local.LocalPath) -> py._path.local.LocalPath:
-    return input_dir.mkdir('sub')
-
-
-@pytest.fixture
-def data_file(input_sub_dir: py._path.local.LocalPath) -> str:
-    data_file = input_sub_dir.join('data.json')
+def data_file(input_dir: py._path.local.LocalPath) -> str:
+    data_file = input_dir.join('data.json')
     data_file.write(json.dumps({
         "uuid": "tbs-0000000000",
         "vendorName": "ABC Company",
@@ -54,24 +49,7 @@ def data_file(input_sub_dir: py._path.local.LocalPath) -> str:
 
 
 @pytest.mark.usefixtures('db', 'data_file')
-def test_load(input_sub_dir: py._path.local.LocalPath) -> None:
-    runner = click.testing.CliRunner()  # type: ignore
-    result = runner.invoke(cli.load, [str(input_sub_dir)])
-    assert result.exit_code == 0
-
-    session = contract.Session()
-    contracts = list(session.query(contract.Contract))
-    raw_contracts = list(session.query(contract.Contract))
-    session.close()
-
-    assert len(contracts) == 1
-    assert contracts[0].uuid == 'tbs-0000000000'
-    assert len(raw_contracts) == 1
-    assert raw_contracts[0].uuid == 'tbs-0000000000'
-
-
-@pytest.mark.usefixtures('db', 'data_file')
-def test_load_with_subfolders(input_dir: py._path.local.LocalPath) -> None:
+def test_load(input_dir: py._path.local.LocalPath) -> None:
     runner = click.testing.CliRunner()  # type: ignore
     result = runner.invoke(cli.load, [str(input_dir)])
     assert result.exit_code == 0
@@ -85,6 +63,7 @@ def test_load_with_subfolders(input_dir: py._path.local.LocalPath) -> None:
     assert contracts[0].uuid == 'tbs-0000000000'
     assert len(raw_contracts) == 1
     assert raw_contracts[0].uuid == 'tbs-0000000000'
+
 
 def test_init_db(db_engine: engine.base.Engine) -> None:
     connection = db_engine.connect()

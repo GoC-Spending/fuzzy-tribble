@@ -1,15 +1,15 @@
 import itertools
 import json
+import os
 import typing
 import pandas as pd
-import glob
 
 
 T = typing.TypeVar('T')
 
 
 def _json_blobs(input_dir: str) -> typing.Iterator[typing.Dict[str, typing.Any]]:
-    input_filenames = glob.glob(input_dir + '/**/*.json', recursive=True)
+    input_filenames = [os.path.join(input_dir, dir_name) for dir_name in os.listdir(input_dir)]
 
     for filename in input_filenames:
         with open(filename) as input_file:
