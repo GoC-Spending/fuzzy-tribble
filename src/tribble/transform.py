@@ -10,7 +10,7 @@ from tribble.transformers import fiscal_date_converter
 from tribble.transformers import reporting_period_value
 from tribble.transformers import reporting_periodizer
 from tribble.transformers import schema_conformer
-
+from tribble.transformers import vendor_name_normalizer
 
 TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
     schema_conformer.SchemaConformer,
@@ -19,6 +19,7 @@ TRANSFORMERS: typing.List[typing.Type[base.BaseTransform]] = [
     fiscal_date_converter.BlankFiscalDateFilter,
     contract_date_cleaner.ContractDateCleaner,
     clear_blanks.ClearBlanks,
+    vendor_name_normalizer.VendorNameNormalizer
 ]
 
 
