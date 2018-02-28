@@ -33,7 +33,7 @@ class DataTemplate:
 def input_template() -> DataTemplate:
     return DataTemplate({
         "uuid": "tbs-0000000000",
-        "vendorName": "ABC Company",
+        "vendorName": "ABC COMPANY",
         "referenceNumber": "0000000000",
         "contractDate": "2012â03â31",
         "description": "499 OTHER PROFESSIONAL SERVICES NOT ELSEWHERE SPECIFIED",
@@ -67,7 +67,7 @@ def input_template() -> DataTemplate:
 def output_template() -> DataTemplate:
     return DataTemplate({
         "uuid": "tbs-0000000000",
-        "vendor_name": "ABC Company",
+        "vendor_name": "ABC COMPANY",
         "reference_number": "0000000000",
         "contract_date": datetime.date(2012, 3, 31),
         "contract_period_start": datetime.date(2012, 4, 1),
